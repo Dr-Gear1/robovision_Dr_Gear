@@ -1,0 +1,428 @@
+Metadata-Version: 2.4
+Name: robovision
+Version: 1.0.0
+Summary: A pure-NumPy image-processing library — filtering, transforms, feature extraction, drawing, and canvas operations — built from scratch without OpenCV.
+Author-email: Omar Mustafa Mohammed <omarmustafamohammed7@gmail.com>
+Maintainer-email: Omar Mustafa Mohammed <omar@robovision.dev>
+License: MIT License
+        
+        Copyright (c) 2026 Omar Mustafa Mohammed
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/omarmustafa/robovision
+Project-URL: Documentation, https://robovision.readthedocs.io
+Project-URL: Repository, https://github.com/omarmustafa/robovision.git
+Project-URL: Bug Tracker, https://github.com/omarmustafa/robovision/issues
+Project-URL: Changelog, https://github.com/omarmustafa/robovision/blob/main/CHANGELOG.md
+Keywords: computer-vision,image-processing,machine-vision,numpy,opencv-alternative,deep-learning,feature-extraction,image-filtering,edge-detection,histogram,convolution,robotics,mechatronics
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Education
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Scientific/Engineering :: Image Processing
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Typing :: Typed
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: matplotlib>=3.7.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: ruff>=0.1.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Requires-Dist: pre-commit>=3.4.0; extra == "dev"
+Provides-Extra: notebook
+Requires-Dist: jupyter>=1.0.0; extra == "notebook"
+Requires-Dist: ipykernel>=6.25.0; extra == "notebook"
+Requires-Dist: ipywidgets>=8.1.0; extra == "notebook"
+Provides-Extra: docs
+Requires-Dist: sphinx>=7.2.0; extra == "docs"
+Requires-Dist: sphinx-rtd-theme>=1.3.0; extra == "docs"
+Requires-Dist: myst-parser>=2.0.0; extra == "docs"
+Provides-Extra: all
+Requires-Dist: robovision[dev,docs,notebook]; extra == "all"
+Dynamic: license-file
+
+# RoboVision
+
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue?style=flat-square" alt="Python Versions"/>
+  <img src="https://img.shields.io/badge/version-1.0.0-green?style=flat-square" alt="Version"/>
+  <img src="https://img.shields.io/badge/license-MIT-yellow?style=flat-square" alt="License"/>
+  <img src="https://img.shields.io/badge/dependencies-NumPy%20%7C%20Matplotlib-orange?style=flat-square" alt="Dependencies"/>
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey?style=flat-square" alt="Platform"/>
+</p>
+
+<p align="center">
+  <b>A pure-NumPy image-processing library — built from scratch without OpenCV.</b><br/>
+  Filtering · Transformations · Feature Extraction · Drawing · Canvas Operations
+</p>
+
+---
+
+## Overview
+
+**RoboVision** is a lightweight, dependency-free computer vision library implemented entirely in Python and NumPy.  
+It covers the core image-processing pipeline from raw pixel manipulation all the way to feature extraction and drawing — without relying on OpenCV, PIL, or any compiled binary.
+
+Built as part of **CSE480: Machine Vision** at Ain Shams University, Faculty of Engineering, Mechatronics Engineering Department — and structured to be a real, importable, maintainable Python package.
+
+---
+
+## Why RoboVision?
+
+| Feature | RoboVision | OpenCV |
+|---|---|---|
+| Dependencies | NumPy + Matplotlib only | Large compiled C++ binary |
+| Channel order | RGB (natural) | BGR (legacy) |
+| Output dtype | Always `float32 [0,1]` | `uint8 [0,255]` by default |
+| Error messages | Specific, typed exceptions | Silent `None` returns |
+| Pure Python | ✅ | ❌ |
+| Teachable internals | ✅ Full math in docstrings | ❌ Black box |
+| Platform | Any Python 3.9+ | Platform-specific build |
+
+---
+
+## Installation
+
+```bash
+pip install robovision
+```
+
+Or install from source:
+
+```bash
+git clone https://github.com/omarmustafa/robovision.git
+cd robovision
+pip install -e .
+```
+
+Install with optional extras:
+
+```bash
+pip install robovision[notebook]   # Jupyter support
+pip install robovision[dev]        # Testing + linting tools
+pip install robovision[all]        # Everything
+```
+
+---
+
+## Quick Start
+
+```python
+import numpy as np
+from robovision.io.image_io import read_image, save_image, to_grayscale
+from robovision.filters.filters import gaussian_filter, mean_filter
+from robovision.filters.edge_detection import canny, sobel_gradients
+from robovision.transforms.resize import resize
+from robovision.features.hog import extract_hog
+from robovision.utils.drawing_primitives import draw_rectangle, draw_text
+
+# Load image
+img = read_image("photo.jpg")           # → float32 [0,1], RGB
+gray = to_grayscale(img)                # → (H, W) float32
+
+# Filtering
+blurred = gaussian_filter(img, size=5, sigma=1.0)
+edges   = canny(gray, low_thresh=0.05, high_thresh=0.15)
+
+# Feature extraction
+hog_feat = extract_hog(gray, cell_size=8, n_bins=9)
+print(f"HOG descriptor length: {hog_feat.shape[0]}")
+
+# Drawing
+canvas = img.copy()
+draw_rectangle(canvas, 50, 50, 200, 150, color=(0, 1, 0), thickness=2)
+
+# Save
+save_image(canvas, "output.png")
+```
+
+---
+
+## Package Structure
+
+```
+robovision/
+│
+├── io/
+│   └── image_io.py          ← read_image, save_image, to_grayscale, to_rgb
+│
+├── transforms/
+│   ├── resize.py            ← nearest-neighbour & bilinear resize
+│   ├── rotate.py            ← rotation with inverse mapping
+│   ├── translate.py         ← pixel translation
+│   ├── flip.py              ← horizontal / vertical / both
+│   └── pyramid.py           ← Gaussian & Laplacian pyramids
+│
+├── filters/
+│   ├── filters.py           ← pad_image, convolve2d, mean, gaussian, median
+│   ├── thresholding.py      ← global, Otsu, adaptive thresholding
+│   ├── edge_detection.py    ← Sobel, bit-plane slicing, Canny
+│   └── histogram_ops.py     ← histogram, equalization, matching, gamma
+│
+├── features/
+│   ├── hog.py               ← Histogram of Oriented Gradients
+│   ├── sift.py              ← SIFT keypoints + 128-D descriptors
+│   ├── color_histogram.py   ← per-channel & 2D joint histograms
+│   ├── color_moments.py     ← mean, std, skewness (RGB + HSV)
+│   └── spatial_pyramid.py   ← Spatial Pyramid Matching (SPM)
+│
+└── utils/
+    ├── normalization.py     ← min-max, z-score, scale [0-1]/[0-255]
+    ├── pixel_clipping.py    ← clip, percentile clip, sigma clip
+    ├── padding.py           ← zero, reflect, replicate, constant, circular
+    ├── convolution.py       ← convolve2d, filter2d, spatial_filter (3.5)
+    ├── drawing_primitives.py← point, line (AA), rectangle, polygon, ellipse
+    └── text_placement.py    ← bitmap font text rendering on NumPy arrays
+```
+
+---
+
+## API Reference
+
+### Image I/O
+
+```python
+from robovision.io.image_io import read_image, save_image, to_grayscale, to_rgb, drop_alpha
+
+img  = read_image("photo.png")                    # (H,W,3) float32 [0,1]
+gray = read_image("photo.png", as_gray=True)      # (H,W)   float32 [0,1]
+gray = to_grayscale(img)                          # BT.601 luminance weights
+rgb  = to_rgb(gray)                               # (H,W) → (H,W,3)
+img3 = drop_alpha(img)                            # (H,W,4) → (H,W,3)
+save_image(img, "out.png")
+save_image(img, "out.jpg", quality=90)
+```
+
+### Transforms
+
+```python
+from robovision.transforms.resize    import resize
+from robovision.transforms.rotate    import rotate
+from robovision.transforms.translate import translate
+from robovision.transforms.flip      import flip
+from robovision.transforms.pyramid   import gaussian_pyramid, laplacian_pyramid
+
+small  = resize(img, (128, 128), method='bilinear')
+rotated = rotate(img, angle=45, method='bilinear', expand=True)
+shifted = translate(img, tx=50, ty=30)
+flipped = flip(img, mode='horizontal')
+gauss   = gaussian_pyramid(img, levels=4)
+lap     = laplacian_pyramid(img, levels=4)
+```
+
+### Filters
+
+```python
+from robovision.filters.filters import mean_filter, gaussian_filter, median_filter, gaussian_kernel
+
+k       = gaussian_kernel(size=5, sigma=1.0)   # normalised 2-D kernel
+blurred = gaussian_filter(img, size=7, sigma=1.5)
+box     = mean_filter(img, kernel_size=5)
+clean   = median_filter(img, kernel_size=3)    # excellent for salt & pepper
+```
+
+### Thresholding
+
+```python
+from robovision.filters.thresholding import threshold_global, threshold_otsu, threshold_adaptive
+
+binary        = threshold_global(gray, thresh=0.5)
+auto, t       = threshold_otsu(gray, return_thresh=True)
+local_mean    = threshold_adaptive(gray, block_size=11, C=0.02, method='mean')
+local_gauss   = threshold_adaptive(gray, block_size=11, C=0.02, method='gaussian')
+```
+
+### Edge Detection
+
+```python
+from robovision.filters.edge_detection import sobel_gradients, canny, bit_plane_slice
+
+grads  = sobel_gradients(gray)       # {'Gx', 'Gy', 'magnitude', 'angle'}
+edges  = canny(gray, 0.05, 0.15)
+msb    = bit_plane_slice(gray, plane=7)   # most significant bit plane
+```
+
+### Histogram Operations
+
+```python
+from robovision.filters.histogram_ops import (
+    compute_histogram, histogram_equalization,
+    histogram_matching, gamma_correction
+)
+
+hist, bins = compute_histogram(gray, n_bins=256)
+enhanced   = histogram_equalization(gray)
+matched    = histogram_matching(source, reference)
+bright     = gamma_correction(img, gamma=0.5)    # γ < 1 → brighten
+dark       = gamma_correction(img, gamma=2.2)    # γ > 1 → darken
+```
+
+### Feature Extraction
+
+```python
+from robovision.features.hog             import extract_hog
+from robovision.features.sift            import extract_sift, sift_feature_vector
+from robovision.features.color_histogram import extract_color_histogram
+from robovision.features.color_moments   import extract_color_moments
+from robovision.features.spatial_pyramid import extract_spatial_pyramid
+
+hog   = extract_hog(gray, cell_size=8, block_size=2, n_bins=9)
+kps, descs = extract_sift(gray, max_keypoints=500)
+chist = extract_color_histogram(img, n_bins=32)    # 96-D for RGB
+cmom  = extract_color_moments(img)                 # 9-D (mean,std,skew × 3ch)
+spm   = extract_spatial_pyramid(img, levels=3, n_bins=16)   # 1008-D
+```
+
+### Core Utilities
+
+```python
+from robovision.utils.normalization    import normalize
+from robovision.utils.pixel_clipping   import clip, clip_percentile
+from robovision.utils.padding          import pad_image
+from robovision.utils.convolution      import convolve2d, spatial_filter
+
+norm   = normalize(img, mode='minmax')          # also: zscore, scale_01, scale_255
+safe   = clip(img, 0.0, 1.0)
+padded = pad_image(img, pad_width=5, mode='reflect')   # also: zero, replicate, constant, circular
+out    = spatial_filter(img, kernel, rgb_strategy='per_channel')
+```
+
+### Drawing & Text
+
+```python
+from robovision.utils.drawing_primitives import (
+    draw_point, draw_line, draw_line_aa,
+    draw_rectangle, draw_polygon, draw_ellipse
+)
+from robovision.utils.text_placement import draw_text, get_text_size
+
+canvas = np.zeros((400, 600, 3), dtype=np.float32)
+draw_point(canvas, x=100, y=100, color=(1,0,0), radius=5)
+draw_line(canvas, 0, 0, 599, 399, color=(0,1,0), thickness=2)
+draw_line_aa(canvas, 10.5, 10.0, 300.5, 200.0, color=(1,1,0))   # anti-aliased
+draw_rectangle(canvas, 50, 50, 250, 200, color=(0,0,1), filled=True)
+draw_polygon(canvas, [(100,50),(200,20),(280,80),(240,160),(80,160)], color=(1,0.5,0), filled=True)
+draw_ellipse(canvas, cx=300, cy=200, rx=80, ry=50, color=(0.8,0,0.8))
+draw_text(canvas, "RoboVision 1.0", x=10, y=10, color=(1,1,1), scale=2)
+```
+
+---
+
+## Math & Algorithms
+
+Each module contains a full docstring with the mathematical derivation.  
+Key algorithms implemented:
+
+| Algorithm | Module | Notes |
+|---|---|---|
+| BT.601 Luminance | `io/image_io.py` | `Y = 0.2989R + 0.5870G + 0.1140B` |
+| Bilinear interpolation | `transforms/resize.py` | 4-neighbour weighted average |
+| Inverse mapping rotation | `transforms/rotate.py` | Avoids holes in output |
+| Gaussian kernel | `filters/filters.py` | `G(x,y) = exp(-(x²+y²)/2σ²)` normalised |
+| Otsu's method | `filters/thresholding.py` | Maximises between-class variance |
+| Adaptive threshold | `filters/thresholding.py` | Local mean/Gaussian − C |
+| Canny 5-stage | `filters/edge_detection.py` | Gaussian → Sobel → NMS → Hysteresis |
+| Histogram equalisation | `filters/histogram_ops.py` | CDF mapping `out = CDF(in)` |
+| Histogram matching | `filters/histogram_ops.py` | Inverse CDF lookup |
+| HOG descriptor | `features/hog.py` | Dalal & Triggs CVPR 2005 |
+| SIFT descriptor | `features/sift.py` | DoG + 128-D descriptor, Lowe 2004 |
+| Spatial Pyramid | `features/spatial_pyramid.py` | Lazebnik et al. CVPR 2006 |
+| Bresenham line | `utils/drawing_primitives.py` | Integer-only rasterisation |
+| Wu anti-aliased line | `utils/drawing_primitives.py` | Sub-pixel alpha blending |
+| Bresenham ellipse | `utils/drawing_primitives.py` | Midpoint algorithm, 4-fold symmetry |
+| Scanline polygon fill | `utils/drawing_primitives.py` | Even-odd rule |
+
+---
+
+## Requirements
+
+| Package | Minimum Version |
+|---|---|
+| Python | 3.9 |
+| NumPy | 1.24.0 |
+| Matplotlib | 3.7.0 |
+
+---
+
+## Development
+
+```bash
+# Clone and install in editable mode
+git clone https://github.com/omarmustafa/robovision.git
+cd robovision
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Format code
+black robovision/
+
+# Lint
+ruff check robovision/
+```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please:
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-filter`)
+3. Commit your changes (`git commit -m 'Add new filter'`)
+4. Push to the branch (`git push origin feature/new-filter`)
+5. Open a Pull Request
+
+---
+
+## License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## Author
+
+**Omar Mustafa Mohammed**  
+Mechatronics Engineering — Ain Shams University  
+CSE480: Machine Vision, Spring 2026
+
+---
+
+## Acknowledgements
+
+- [Dalal & Triggs (2005)](https://lear.inrialpes.fr/people/triggs/pubs/Dalal-cvpr05.pdf) — HOG descriptor
+- [Lowe (2004)](https://www.cs.ubc.ca/~lowe/papers/ijcv04.pdf) — SIFT descriptor  
+- [Lazebnik, Schmid & Ponce (2006)](http://www.cs.unc.edu/~lazebnik/publications/cvpr06_lsp.pdf) — Spatial Pyramid Matching
+- [Canny (1986)](https://ieeexplore.ieee.org/document/4767851) — Edge detection
+- [Otsu (1979)](https://ieeexplore.ieee.org/document/4310076) — Thresholding

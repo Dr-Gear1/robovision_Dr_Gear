@@ -1,0 +1,134 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Project metadata
+# ══════════════════════════════════════════════════════════════════════════════
+[project]
+name            = "robovision_Dr_Gear"
+version         = "1.0.0"
+description     = "A pure-NumPy image-processing library — filtering, transforms, feature extraction, drawing, and canvas operations — built from scratch without OpenCV."
+readme          = "README.md"
+license         = { file = "LICENSE" }
+requires-python = ">=3.9"
+
+authors = [
+    { name = "Omar Mustafa Mohammed", email = "omarmustafamohammed7@gmail.com" }
+]
+
+maintainers = [
+    { name = "Omar Mustafa Mohammed", email = "omar@robovision.dev" }
+]
+
+keywords = [
+    "computer-vision", "image-processing", "machine-vision",
+    "numpy", "opencv-alternative", "deep-learning", "feature-extraction",
+    "image-filtering", "edge-detection", "histogram", "convolution",
+    "robotics", "mechatronics"
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+# ── Runtime dependencies ──────────────────────────────────────────────────────
+dependencies = [
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+]
+
+# ── Optional dependency groups ────────────────────────────────────────────────
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.4.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "ipywidgets>=8.1.0",
+]
+docs = [
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "myst-parser>=2.0.0",
+]
+all = [
+    "robovision[dev,notebook,docs]",
+]
+
+# ── Project URLs ──────────────────────────────────────────────────────────────
+[project.urls]
+Homepage      = "https://github.com/omarmustafa/robovision"
+Documentation = "https://robovision.readthedocs.io"
+Repository    = "https://github.com/omarmustafa/robovision.git"
+"Bug Tracker" = "https://github.com/omarmustafa/robovision/issues"
+Changelog     = "https://github.com/omarmustafa/robovision/blob/main/CHANGELOG.md"
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Package discovery
+# ══════════════════════════════════════════════════════════════════════════════
+[tool.setuptools.packages.find]
+where   = ["."]
+include = ["robovision*"]
+exclude = ["tests*", "docs*", "notebooks*"]
+
+[tool.setuptools.package-data]
+robovision = ["py.typed", "*.pyi"]
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  Tool configurations
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Black (formatter) ─────────────────────────────────────────────────────────
+[tool.black]
+line-length    = 100
+target-version = ["py39", "py310", "py311", "py312"]
+
+# ── Ruff (linter) ─────────────────────────────────────────────────────────────
+[tool.ruff]
+line-length = 100
+select      = ["E", "F", "W", "I", "N", "UP"]
+ignore      = ["E501"]
+
+# ── mypy (type checker) ───────────────────────────────────────────────────────
+[tool.mypy]
+python_version         = "3.10"
+warn_return_any        = true
+warn_unused_configs    = true
+ignore_missing_imports = true
+
+# ── pytest ────────────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths   = ["tests"]
+python_files = ["test_*.py"]
+addopts     = "-v --tb=short --cov=robovision --cov-report=term-missing"
+
+# ── Coverage ──────────────────────────────────────────────────────────────────
+[tool.coverage.run]
+source   = ["robovision"]
+omit     = ["*/tests/*", "*/__init__.py"]
+
+[tool.coverage.report]
+show_missing   = true
+skip_covered   = false
+fail_under     = 80
