@@ -34,6 +34,17 @@ def _gaussian_kernel_2d(sigma: float, size: int | None = None) -> np.ndarray:
     return (k / k.sum()).astype(np.float32)
 
 
+def _gaussian_kernel_1d(sigma: float) -> np.ndarray:
+    """1-D Gaussian kernel normalised to sum = 1."""
+    size = int(2 * np.ceil(3 * sigma) + 1)
+    if size % 2 == 0:
+        size += 1
+    c  = size // 2
+    ax = np.arange(size, dtype=np.float32) - c
+    k  = np.exp(-(ax ** 2) / (2 * sigma ** 2))
+    return (k / k.sum()).astype(np.float32)
+
+
 def _convolve1d(image: np.ndarray, kernel: np.ndarray, axis: int) -> np.ndarray:
     """
     Apply a 1-D kernel along one axis using vectorised slicing.
